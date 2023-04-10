@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#CAA64B"
     tools:context=".MainActivity">
 
     <Button
@@ -14,6 +15,7 @@
         android:layout_marginTop="173dp"
         android:text="Add Meals!"
         android:textSize="20sp"
+        app:cornerRadius="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,17 +27,20 @@
         android:layout_marginTop="34dp"
         android:text="Meals By Ingredient"
         android:textSize="20sp"
+        app:cornerRadius="25dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addmealid" />
 
     <Button
-        android:id="@+id/searchmealid"
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="25dp"
+        android:layout_marginTop="49dp"
         android:text="Search for Meals"
         android:textSize="20sp"
+        app:cornerRadius="25dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ingredientid" />
 
