@@ -28,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         val mealDao = db.mealDao()
 
         val addMealsDb = findViewById<Button>(R.id.add_button)
-        val SB_ngredient=findViewById<Button>(R.id.search_by_ing_button)
+        val SB_ingredient=findViewById<Button>(R.id.search_by_ing_button)
 
-        SB_ngredient.setOnClickListener{
+        SB_ingredient.setOnClickListener{
 //            val intent = Intent(this, Search_By_Ingredient::class.java)
 //            startActivity(intent)
         }
