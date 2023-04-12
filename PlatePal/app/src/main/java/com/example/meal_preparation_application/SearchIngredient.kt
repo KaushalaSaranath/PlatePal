@@ -3,17 +3,21 @@ package com.example.meal_preparation_application
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.text.LineBreaker.JUSTIFICATION_MODE_INTER_WORD
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
+import androidx.room.Room
 import com.bumptech.glide.Glide
+import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.Meals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,10 +38,35 @@ class SearchIngredient : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_ingredient)
 
+        val db = Room.databaseBuilder(this, AppDatabase::class.java,
+            "mealdatabase").build()
+        val mealDao = db.mealDao()
+
+
 
         val RetriveMeal = findViewById<Button>(R.id.retrieveId)
         val search_field = findViewById<EditText>(R.id.searchId)
+        val saveMeals = findViewById<Button>(R.id.savemealid)
         scroll_linearLayout = findViewById<LinearLayout>(R.id.scroll_layout)
+
+        saveMeals.setOnClickListener{
+            runBlocking {
+                launch {
+                    for (index in 0 until (allMeals?.size !!)){
+                        mealDao.insert(allMeals?.get(index) !!)
+                    }
+
+                    val meals: List<Meals> = mealDao.getAll()
+                    for (meal_ in meals) {
+                        println(meal_)
+                    }
+                }
+            }
+        }
+
+
+
+
 
         RetriveMeal.setOnClickListener{
             // collecting all the JSON string
@@ -68,6 +97,7 @@ class SearchIngredient : AppCompatActivity() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun createMealCards() {
         for (i in 0 until (allMeals?.size!!)) {
             var iscard_span = false
@@ -144,6 +174,7 @@ class SearchIngredient : AppCompatActivity() {
 
             linearLayout.addView(areaTextView)
 
+
             var tagsTextView: TextView? = null
             if (allMeals!![i].tags !=null){
                 tagsTextView = TextView(this)
@@ -188,6 +219,34 @@ class SearchIngredient : AppCompatActivity() {
             InstructionDetailsTextView.isVisible = false
 
             linearLayout.addView(InstructionDetailsTextView)
+
+            var ingredientTextView: TextView? = null
+            var IngredientsDetailsTextView: TextView? = null
+            if (allMeals!![i].ingredients !=null){
+                ingredientTextView = TextView(this)
+                ingredientTextView.text = "Ingredients"
+                ingredientTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
+                ingredientTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                ingredientTextView.setPadding(5, 10, 0, 0)
+                ingredientTextView.isVisible = false
+
+                linearLayout.addView(ingredientTextView)
+                val ingredients =  allMeals!![i].ingredients
+                val measure = allMeals!![i].measure
+                val formattedIngredients = ingredients?.zip(measure as java.util.ArrayList)
+                    ?.filter { it.second.isNotBlank() }
+                    ?.joinToString(separator = ", ") { "${it.first} - ${it.second}" }
+
+                IngredientsDetailsTextView = TextView(this)
+                IngredientsDetailsTextView.text = formattedIngredients
+                IngredientsDetailsTextView.justificationMode = JUSTIFICATION_MODE_INTER_WORD
+                IngredientsDetailsTextView.setTextColor(ContextCompat.getColor(this, R.color.black))
+                IngredientsDetailsTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+                IngredientsDetailsTextView.setPadding(5, 10, 0, 0)
+                IngredientsDetailsTextView.isVisible = false
+
+                linearLayout.addView(IngredientsDetailsTextView)
+            }
 
 
             var sourceTextView: TextView? = null
@@ -290,39 +349,6 @@ class SearchIngredient : AppCompatActivity() {
                 linearLayout.addView(dateModifiedTextView)
             }
 
-//
-//
-//            val instructionsTextView = TextView(this)
-//            instructionsTextView.layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            )
-//            instructionsTextView.text = "Instructions"
-//            instructionsTextView.setTextColor(Color.parseColor("#000000"))
-//            instructionsTextView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC)
-//
-//            linearLayout.addView(instructionsTextView)
-//
-//            val cookingTextView = TextView(this)
-//            cookingTextView.layoutParams = LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            )
-//            cookingTextView.text = "cooking meal"
-//            cookingTextView.setTextColor(Color.parseColor("#000000"))
-//            cookingTextView.setTypeface(Typeface.DEFAULT)
-//
-//            linearLayout.addView(cookingTextView)
-
-//            val measureTextView = TextView(this)
-//            measureTextView.layoutParams = LinearLayout.LayoutParams(
-//                154,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            )
-//            measureTextView.text = "100g"
-//            measureTextView.setTextColor(Color.parseColor("#000000"))
-//            measureTextView.setTypeface(Typeface.DEFAULT, Typeface.ITALIC)
-
             linearLayout.setOnClickListener {
                 iscard_span = !iscard_span
                 if (drinkAlternateTextView != null) {
@@ -354,6 +380,13 @@ class SearchIngredient : AppCompatActivity() {
                 if (dateModifiedTextView != null) {
                     dateModifiedTextView.isVisible = iscard_span
                 }
+                if (ingredientTextView != null) {
+                    ingredientTextView.isVisible = iscard_span
+                }
+                if (IngredientsDetailsTextView != null) {
+                    IngredientsDetailsTextView.isVisible = iscard_span
+                }
+
             }
             cardView.addView(linearLayout)
             scroll_linearLayout.addView(cardView)
