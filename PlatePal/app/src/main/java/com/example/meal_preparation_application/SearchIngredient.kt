@@ -34,6 +34,7 @@ class SearchIngredient : AppCompatActivity() {
 
     lateinit var scroll_linearLayout : LinearLayout
     var allMeals: ArrayList<Meals>? = null
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_ingredient)

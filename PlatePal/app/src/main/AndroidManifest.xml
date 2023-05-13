@@ -15,9 +15,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".searchMeal"
+            android:exported="false" />
+        <activity
             android:name=".SearchIngredient"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
