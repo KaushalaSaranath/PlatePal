@@ -184,8 +184,11 @@ class MainActivity : AppCompatActivity() {
         search1.setOnClickListener {
             val intent = Intent(this, searchMeal::class.java)
             startActivity(intent)
-
-
+        }
+        val search2: Button = findViewById(R.id.add_button2)
+        search2.setOnClickListener {
+            val intent = Intent(this, SearchAllMeal::class.java)
+            startActivity(intent)
         }
     }
 
