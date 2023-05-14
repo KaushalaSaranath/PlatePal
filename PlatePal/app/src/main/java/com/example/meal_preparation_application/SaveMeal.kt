@@ -11,17 +11,14 @@ import com.bumptech.glide.Glide
 import com.example.meal_preparation_application.R
 import com.example.meal_preparation_application.saveMealsCardView
 
-// on below line we are creating an
-// adapter class for our grid view.
+// below line are creating an adapter class for our grid view.
 internal class SaveMeal(
-    // on below line we are creating two
-    // variables for course list and context
+    // create variables
     private val courseList: List<saveMealsCardView>,
     private val context: Context
 ) :
     BaseAdapter() {
-    // in base adapter class we are creating variables
-    // for layout inflater, course image view and course text view.
+    //  create variables in base adapter class
     private var layoutInflater: LayoutInflater? = null
     private lateinit var cardCategory: TextView
     private lateinit var cardName: TextView
@@ -55,11 +52,9 @@ internal class SaveMeal(
         // If it is null we are initializing it.
         if (convertView == null) {
             // on below line we are passing the layout file
-            // which we have to inflate for each item of grid view.
             convertView = layoutInflater!!.inflate(R.layout.save_meal_cards, null)
         }
-        // on below line we are initializing our course image view
-        // and course text view with their ids.
+        // on below line we are initializing our course image view course text view with their ids.
         cardName = convertView!!.findViewById(R.id.name)
         cardCategory = convertView.findViewById(R.id.category)
         cardImageView = convertView.findViewById(R.id.idIVCourse)
@@ -72,11 +67,7 @@ internal class SaveMeal(
             .into(cardImageView)
 
 
-//        // on below line we are setting image for our course image view.
-//        courseIV.setImageResource(courseList.get(position).courseImg)
-//        // on below line we are setting text in our course text view.
-//        courseTV.setText(courseList.get(position).courseName)
-//        // at last we are returning our convert view.
+//setting image
         return convertView
     }
 }
