@@ -57,10 +57,6 @@ class SearchIngredient : AppCompatActivity() {
                         mealDao.insert(allMeals?.get(index) !!)
                     }
 
-                    val meals: List<Meals> = mealDao.getAll()
-                    for (meal_ in meals) {
-                        println(meal_)
-                    }
                 }
             }
         }
@@ -72,7 +68,7 @@ class SearchIngredient : AppCompatActivity() {
         RetriveMeal.setOnClickListener{
             // collecting all the JSON string
             var stb = StringBuilder()
-            val url_string = "https://www.themealdb.com/api/json/v1/1/search.php?s="+ search_field.text
+            val url_string = "https://www.themealdb.com/api/json/v1/1/filter.php?i="+ search_field.text
             val url = URL(url_string)
             val con: HttpURLConnection = url.openConnection() as HttpURLConnection
             runBlocking {
@@ -85,7 +81,6 @@ class SearchIngredient : AppCompatActivity() {
                             stb.append(line + "\n")
                             line = bf.readLine()
                         }
-                        println(stb)
                         parseJSON(stb)
                         runOnUiThread{
                             scroll_linearLayout.removeAllViews()
@@ -395,6 +390,7 @@ class SearchIngredient : AppCompatActivity() {
     }
 
     suspend fun parseJSON(stb: java.lang.StringBuilder) {
+        println(stb)
         // this contains the full JSON returned by the Web Service
         val json = JSONObject(stb.toString())
         // Information about all the books extracted by this function
@@ -404,29 +400,57 @@ class SearchIngredient : AppCompatActivity() {
         for (i in 0..jsonArray.length()-1) {
             val food: JSONObject = jsonArray[i] as JSONObject // this is a json object
         // extract the title
+            // collecting all the JSON string
+            var stb = StringBuilder()
+            val url_string = "https://www.themealdb.com/api/json/v1/1/lookup.php?i="+ food["idMeal"]
+            val url = URL(url_string)
+            val con: HttpURLConnection = url.openConnection() as HttpURLConnection
+            runBlocking {
+                launch {
+// run the code of the coroutine in a new thread
+                    withContext(Dispatchers.IO) {
+                        var bf = BufferedReader(InputStreamReader(con.inputStream))
+                        var line: String? = bf.readLine()
+                        while (line != null) {
+                            stb.append(line + "\n")
+                            line = bf.readLine()
+                        }
+                        // this contains the full JSON returned by the Web Service
+                        val json = JSONObject(stb.toString())
+                        // Information about all the books extracted by this function
+                        var jsonArray: JSONArray = json.getJSONArray("meals")
+                        // extract all the books from the JSON array
+                        println(jsonArray.length())
 
-            val tempMeal = Meals(
-                name = food["strMeal"] as? String ?: null,
-                drinkAlternate = food["strDrinkAlternate"] as? String ?: null,
-                category = food["strCategory"] as? String ?: null,
-                area = food["strArea"]as? String ?: null,
-                instructions = food["strInstructions"] as? String ?: null,
-                mealThumb = food["strMealThumb"] as? String ?: null,
-                ingredients = getList(food,"strIngredient"),
-                measure = getList(food,"strMeasure"),
-                tags = food["strTags"] as? String ?: null,
-                youtube = food["strYoutube"] as? String ?: null,
-                source = food["strSource"] as? String ?: null,
-                imageSource = food["strImageSource"] as? String ?: null,
-                creativeCommonsConfirmed = food["strCreativeCommonsConfirmed"] as? String ?: null,
-                dateModified = food["dateModified"] as? String ?: null,
-            )
-            allMeals!!.add(tempMeal)
-// extract all the authors
+                        for (i in 0..jsonArray.length() - 1) {
+                            val food: JSONObject =
+                                jsonArray[i] as JSONObject // this is a json object
+                            val tempMeal = Meals(
+                                name = food["strMeal"] as? String ?: null,
+                                drinkAlternate = food["strDrinkAlternate"] as? String ?: null,
+                                category = food["strCategory"] as? String ?: null,
+                                area = food["strArea"] as? String ?: null,
+                                instructions = food["strInstructions"] as? String ?: null,
+                                mealThumb = food["strMealThumb"] as? String ?: null,
+                                ingredients = getList(food, "strIngredient"),
+                                measure = getList(food, "strMeasure"),
+                                tags = food["strTags"] as? String ?: null,
+                                youtube = food["strYoutube"] as? String ?: null,
+                                source = food["strSource"] as? String ?: null,
+                                imageSource = food["strImageSource"] as? String ?: null,
+                                creativeCommonsConfirmed = food["strCreativeCommonsConfirmed"] as? String
+                                    ?: null,
+                                dateModified = food["dateModified"] as? String ?: null,
+                            )
+                            allMeals!!.add(tempMeal)
+                        }
+                    }
+                }
+            }
+
         }
     }
 
-    //
     private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
         val temp = ArrayList<String>()
         for (i in 1..20) {
