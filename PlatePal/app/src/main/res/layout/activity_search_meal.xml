@@ -55,8 +55,12 @@
 
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
+    <GridView
+        android:id="@+id/idGRV"
         android:layout_width="match_parent"
-        android:layout_height="302dp" />
+        android:layout_height="match_parent"
+        android:horizontalSpacing="6dp"
+        android:numColumns="2"
+        android:verticalSpacing="6dp" />
 
 </LinearLayout>
