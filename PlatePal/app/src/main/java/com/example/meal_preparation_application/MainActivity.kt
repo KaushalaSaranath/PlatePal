@@ -1,9 +1,15 @@
+
+//Video Link : https://drive.google.com/file/d/1uhDBI0RSQWbKe_ISulYNPwugwctp_gfP/view?usp=share_link
+//Student Id : 20200556
+//UoW Id : w1870583
+
 package com.example.meal_preparation_application
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Toast
 import androidx.room.Room
 import com.example.meal_preparation_application.classes.AppDatabase
 import com.example.meal_preparation_application.classes.Meals
@@ -165,15 +171,9 @@ class MainActivity : AppCompatActivity() {
                     mealDao.insert(mealChickenMarengo)
                     mealDao.insert(mealBeefBanhMi)
                     mealDao.insert(mealLeblebiSoup)
-
-                    val meals: List<Meals> = mealDao.getAll()
-                    for (meal_ in meals) {
-                        println(meal_)
-                    }
                 }
             }
-
-
+            Toast.makeText(this, "Meals are added to DataBase", Toast.LENGTH_SHORT).show()
         }
         val search: Button = findViewById(R.id.search_by_ing_button)
         search.setOnClickListener {

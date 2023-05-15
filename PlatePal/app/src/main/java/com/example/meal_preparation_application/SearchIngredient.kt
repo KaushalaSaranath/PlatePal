@@ -33,28 +33,30 @@ import java.net.URL
 class SearchIngredient : AppCompatActivity() {
 
     lateinit var scroll_linearLayout : LinearLayout
+    lateinit var search_field : EditText
     var allMeals: ArrayList<Meals>? = null
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search_ingredient)
 
-        val db = Room.databaseBuilder(this, AppDatabase::class.java,
-            "mealdatabase").build()
+        val db = Room.databaseBuilder(
+            this, AppDatabase::class.java,
+            "mealdatabase"
+        ).build()
         val mealDao = db.mealDao()
 
 
-
         val RetriveMeal = findViewById<Button>(R.id.retrieveId)
-        val search_field = findViewById<EditText>(R.id.searchId)
+        search_field = findViewById<EditText>(R.id.searchId)
         val saveMeals = findViewById<Button>(R.id.savemealid)
         scroll_linearLayout = findViewById<LinearLayout>(R.id.scroll_layout)
 
-        saveMeals.setOnClickListener{
+        saveMeals.setOnClickListener {
             runBlocking {
                 launch {
-                    for (index in 0 until (allMeals?.size !!)){
-                        mealDao.insert(allMeals?.get(index) !!)
+                    for (index in 0 until (allMeals?.size!!)) {
+                        mealDao.insert(allMeals?.get(index)!!)
                     }
 
                 }
@@ -62,10 +64,14 @@ class SearchIngredient : AppCompatActivity() {
         }
 
 
+        RetriveMeal.setOnClickListener {
+            SaveIngredients()
 
+        }
+    }
 
-
-        RetriveMeal.setOnClickListener{
+    private fun SaveIngredients() {
+        if (search_field.text.isNotEmpty()){
             // collecting all the JSON string
             var stb = StringBuilder()
             val url_string = "https://www.themealdb.com/api/json/v1/1/filter.php?i="+ search_field.text
@@ -81,7 +87,8 @@ class SearchIngredient : AppCompatActivity() {
                             stb.append(line + "\n")
                             line = bf.readLine()
                         }
-                        parseJSON(stb)
+
+                        if (parseJSON(stb))
                         runOnUiThread{
                             scroll_linearLayout.removeAllViews()
                             createMealCards()
@@ -89,11 +96,11 @@ class SearchIngredient : AppCompatActivity() {
                     }
                 }
             }
+        }else{
+            Toast.makeText(this, "Please Fill ! ", Toast.LENGTH_SHORT).show()
         }
-
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     private fun createMealCards() {
         for (i in 0 until (allMeals?.size!!)) {
             var iscard_span = false
@@ -389,17 +396,23 @@ class SearchIngredient : AppCompatActivity() {
         }
     }
 
-    suspend fun parseJSON(stb: java.lang.StringBuilder) {
-        println(stb)
+    suspend fun parseJSON(stb: java.lang.StringBuilder): Boolean {
         // this contains the full JSON returned by the Web Service
         val json = JSONObject(stb.toString())
         // Information about all the books extracted by this function
         allMeals = ArrayList<Meals>()
+        if (json.isNull("meals")){
+            runOnUiThread {
+                Toast.makeText(this, "Meals not found!", Toast.LENGTH_SHORT).show()
+            }
+            return false
+        }
         var jsonArray: JSONArray = json.getJSONArray("meals")
-        // extract all the books from the JSON array
+        // extract all the meal from the JSON array
+
         for (i in 0..jsonArray.length()-1) {
             val food: JSONObject = jsonArray[i] as JSONObject // this is a json object
-        // extract the title
+        // extract the id
             // collecting all the JSON string
             var stb = StringBuilder()
             val url_string = "https://www.themealdb.com/api/json/v1/1/lookup.php?i="+ food["idMeal"]
@@ -449,6 +462,7 @@ class SearchIngredient : AppCompatActivity() {
             }
 
         }
+        return true
     }
 
     private fun getList(jsonMealList: JSONObject, typeName: String): ArrayList<String> {
@@ -459,6 +473,18 @@ class SearchIngredient : AppCompatActivity() {
         }
         return temp;
     }
-//    val search: Button = findViewById(R.id.retrieveId)
-//    search.setOnClickListener {}
+    // Save data to restore later
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+
+    }
+    // Retrieve saved data
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        // Use the restored data as needed
+        SaveIngredients()
+
+    }
 }
+
+

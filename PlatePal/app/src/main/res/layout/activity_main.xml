@@ -64,7 +64,7 @@
         android:layout_marginTop="28dp"
         android:backgroundTint="#FFD200"
         android:fontFamily="@font/poppins_bold"
-        android:text="Search Meals"
+        android:text="Search All Meals"
         android:textColor="#0C0C0C"
         android:textSize="20sp"
         app:cornerRadius="15dp"
